@@ -34,17 +34,40 @@ module datamemory #(
     Datain = wd;
     Wr = 4'b0000;
 
-    if (MemRead) begin
+    if (MemRead) begin // Load
       case (Funct3)
         3'b010:  //LW
         rd <= Dataout;
+        3'b001: // LH
+        rd <= {{16{Dataout[15]}}, Dataout[15:0]};
+        3'b000: // LB
+        rd <= {{24{Dataout[7]}}, Dataout[7:0]};
+        3'b100: // LBU
+        rd <= {24'b0, Dataout[7:0]};
         default: rd <= Dataout;
       endcase
-    end else if (MemWrite) begin
+    end else if (MemWrite) begin // Store
       case (Funct3)
         3'b010: begin  //SW
-          Wr <= 4'b1111;
-          Datain <= wd;
+            Wr <= 4'b1111;
+            Datain <= wd;
+        end
+        3'b001: begin // SH
+            case (a[1:0])
+            2'b00: Wr = 4'b0011; 
+            2'b10: Wr = 4'b1100;   
+            default: Wr = 4'b0011;
+          endcase
+          Datain = {2{wd[15:0]}}; 
+        end
+        3'b000: begin // SB
+            case (a[1:0])
+            2'b00: Wr = 4'b0001;   
+            2'b01: Wr = 4'b0010;    
+            2'b10: Wr = 4'b0100;  
+            2'b11: Wr = 4'b1000;
+          endcase
+          Datain = {4{wd[7:0]}}; 
         end
         default: begin
           Wr <= 4'b1111;
