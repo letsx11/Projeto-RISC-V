@@ -33,6 +33,8 @@ module alu#(
                     ALUResult = (SrcA >= SrcB) ? 1 : 0;
                 4'b1011: // Less Than (BLT)
                     ALUResult = (SrcA < SrcB) ? 1 : 0;
+                4'b1100: //SLT
+                    ALUResult = (SrcA < SrcB) ? 1 : 0;
                 default:
                     ALUResult = 0;
             endcase
