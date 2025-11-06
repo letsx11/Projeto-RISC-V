@@ -54,20 +54,20 @@ module datamemory #(
         end
         3'b001: begin // SH
             case (a[1:0])
-            2'b00: Wr = 4'b0011; 
-            2'b10: Wr = 4'b1100;   
-            default: Wr = 4'b0011;
+            2'b00: Wr <= 4'b0011; 
+            2'b10: Wr <= 4'b1100;   
+            default: Wr <= 4'b0011;
           endcase
-          Datain = {2{wd[15:0]}}; 
+          Datain <= {2{wd[15:0]}}; 
         end
         3'b000: begin // SB
             case (a[1:0])
-            2'b00: Wr = 4'b0001;   
-            2'b01: Wr = 4'b0010;    
-            2'b10: Wr = 4'b0100;  
-            2'b11: Wr = 4'b1000;
+            2'b00: Wr <= 4'b0001;   
+            2'b01: Wr <= 4'b0010;    
+            2'b10: Wr <= 4'b0100;  
+            2'b11: Wr <= 4'b1000;
           endcase
-          Datain = {4{wd[7:0]}}; 
+          Datain <= {4{wd[7:0]}}; 
         end
         default: begin
           Wr <= 4'b1111;
