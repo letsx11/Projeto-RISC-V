@@ -14,7 +14,20 @@ module imm_Gen (
       7'b0100011:  /*S-type*/
       Imm_out = {inst_code[31] ? 20'hFFFFF : 20'b0, inst_code[31:25], inst_code[11:7]};
 
-      7'b1100011:  /*B-type*/
+      7'b0010011: // I-type / aritmeticas 
+        case (inst_code[14:12]) 
+          
+          /*(SLLI, SRLI, SRAI)*/
+          3'b101: 
+            Imm_out = {27'b0, inst_code[24:20]}; 
+            
+          /*(ADDI, SLTI)*/
+          default: 
+            Imm_out = {inst_code[31] ? 20'hFFFFF : 20'b0, inst_code[31:20]};
+            
+        endcase
+
+      7'b1100011:  /*B-type*/ 
       Imm_out = {
         inst_code[31] ? 19'h7FFFF : 19'b0,
         inst_code[31],
