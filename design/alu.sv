@@ -40,7 +40,7 @@ module alu#(
                 4'b1011: // Less Than (BLT)
                     ALUResult = (SrcA < SrcB) ? 1 : 0;
                 4'b1100: //SLT-SLTI
-                    ALUResult = (SrcA < SrcB) ? 1 : 0;
+                    ALUResult = ($signed(SrcA) < $signed(SrcB)) ? 1 : 0;
                 default:
                     ALUResult = 0;
             endcase
