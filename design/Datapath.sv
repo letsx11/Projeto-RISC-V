@@ -221,6 +221,8 @@ module Datapath #(
       B.Curr_Pc,
       B.ImmG,
       B.Branch,
+      B.ALUOp,      // Sinal de controle: branch condicional ou um jump incondicional
+      B.RD_One,     // valor do Registrador 1 (JALR: Pula para endereço contido em registrador)
       ALUResult,
       BrImm,
       Old_PC_Four,
