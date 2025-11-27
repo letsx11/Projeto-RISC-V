@@ -29,7 +29,7 @@ module BranchUnit #(
   assign BrPC = (Branch_Sel) ? PC_Imm : 32'b0;  // Branch -> PC+Imm   // Otherwise, BrPC value is not important
   assign PcSel = Branch_Sel;  // 1:branch is taken; 0:branch is not taken(choose pc+4)
 
-  assign Result_Sel = Jmp_Sel || Branch_Sel; //realiza salto ou branch
+  assign Result_Sel = Jump_Sel || Branch_Sel; //realiza salto ou branch
 
   assign BrPC = (Result_Sel) ? PC_Imm : 32'b0;  //se o salto ocorrer o BrPc recebe o imediato // Senão, BrPC recebe  0
   assign PcSel = Result_Sel;  // 1:desvio tomado; 0:desvio não tomado(próxima instrução pc+4)
