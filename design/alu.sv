@@ -7,7 +7,7 @@ module alu#(
         (
         input logic [DATA_WIDTH-1:0]    SrcA,
         input logic [DATA_WIDTH-1:0]    SrcB,
-
+        input logic [8:0]               PC_Cur,
         input logic [OPCODE_LENGTH-1:0]    Operation,
         output logic[DATA_WIDTH-1:0]    ALUResult
         );
@@ -42,7 +42,7 @@ module alu#(
                 4'b1100: //SLT-SLTI
                     ALUResult = ($signed(SrcA) < $signed(SrcB)) ? 1 : 0;
                 4'b1101: //JAL
-                        ALUResult = 1;
+                        ALUResult = PC_Cur + 4;
                 default:
                     ALUResult = 0;
             endcase
