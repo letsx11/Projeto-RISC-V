@@ -25,7 +25,7 @@ module BranchUnit #(
   assign PC_Imm = (Jump_Sel) ? Imm + Reg1 : PC_Full + Imm;
   assign PC_Four = PC_Full + 32'b100;
   assign Branch_Sel = Branch && AluResult[0];  // 0:Branch is taken; 1:Branch is not taken
-  assign Jmp_Sel = ALUOp == 2'b11 && Branch;
+  assign Jump_Sel = ALUOp == 2'b11 && Branch;
 
   assign Result_Sel = Jump_Sel || Branch_Sel; //realiza salto ou branch
 
