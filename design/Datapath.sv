@@ -3,12 +3,12 @@
 import Pipe_Buf_Reg_PKG::*;
 
 module Datapath #(
-    parameter PC_W = 9,  // Program Counter
-    parameter INS_W = 32,  // Instruction Width
-    parameter RF_ADDRESS = 5,  // Register File Address
-    parameter DATA_W = 32,  // Data WriteData
-    parameter DM_ADDRESS = 9,  // Data Memory Address
-    parameter ALU_CC_W = 4  // ALU Control Code Width
+    parameter PC_W = 9,   // Program Counter
+    parameter INS_W = 32,   // Instruction Width
+    parameter RF_ADDRESS = 5,   // Register File Address
+    parameter DATA_W = 32,   // Data WriteData
+    parameter DM_ADDRESS = 9,   // Data Memory Address
+    parameter ALU_CC_W = 4   // ALU Control Code Width
 ) (
     input  logic                 clk,
     reset,
@@ -97,12 +97,13 @@ module Datapath #(
   end
 
   //--// The Hazard Detection Unit
+  // Atualizado para usar os nomes das portas do seu módulo existente
   HazardDetection detect (
-      A.Curr_Instr[19:15],
-      A.Curr_Instr[24:20],
-      B.rd,
-      B.MemRead,
-      Reg_Stall
+      .IF_ID_RS1(A.Curr_Instr[19:15]),
+      .IF_ID_RS2(A.Curr_Instr[24:20]),
+      .ID_EX_rd(B.rd),
+      .ID_EX_MemRead(B.MemRead),
+      .stall(Reg_Stall)
   );
 
   // //Register File
@@ -160,8 +161,18 @@ module Datapath #(
       B.ALUOp <= ALUOp;
       B.Branch <= Branch;
       B.Curr_Pc <= A.Curr_Pc;
-      B.RD_One <= Reg1;
-      B.RD_Two <= Reg2;
+      
+      // Bypass manual WB->ID (Mantido da correção anterior)
+      if (D.RegWrite && D.rd != 0 && D.rd == A.Curr_Instr[19:15]) 
+          B.RD_One <= WrmuxSrc;
+      else 
+          B.RD_One <= Reg1;
+
+      if (D.RegWrite && D.rd != 0 && D.rd == A.Curr_Instr[24:20]) 
+          B.RD_Two <= WrmuxSrc;
+      else 
+          B.RD_Two <= Reg2;
+
       B.RS_One <= A.Curr_Instr[19:15];
       B.RS_Two <= A.Curr_Instr[24:20];
       B.rd <= A.Curr_Instr[11:7];
@@ -174,17 +185,17 @@ module Datapath #(
 
   //--// The Forwarding Unit
   ForwardingUnit forunit (
-      B.RS_One,
-      B.RS_Two,
-      C.rd,
-      D.rd,
-      C.RegWrite,
-      D.RegWrite,
-      FAmuxSel,
-      FBmuxSel
+      .RS1(B.RS_One),
+      .RS2(B.RS_Two),
+      .EX_MEM_rd(C.rd),
+      .MEM_WB_rd(D.rd),
+      .EX_MEM_RegWrite(C.RegWrite),
+      .MEM_WB_RegWrite(D.RegWrite),
+      .Forward_A(FAmuxSel),
+      .Forward_B(FBmuxSel)
   );
 
-  // // //ALU
+  // ALU
   assign Funct7 = B.func7;
   assign Funct3 = B.func3;
   assign ALUOp_Current = B.ALUOp;
@@ -218,17 +229,19 @@ module Datapath #(
       ALU_CC,
       ALUResult
   );
+  
   BranchUnit #(9) brunit (
-      B.Curr_Pc,
-      B.ImmG,
-      B.Branch,
-      B.ALUOp,      // Sinal de controle: branch condicional ou um jump incondicional
-      B.RD_One,     // valor do Registrador 1 (JALR: Pula para endereço contido em registrador)
-      ALUResult,
-      BrImm,
-      Old_PC_Four,
-      BrPC,
-      PcSel
+      .Cur_PC(B.Curr_Pc),
+      .Imm(B.ImmG),
+      .Branch(B.Branch),
+      .AluResult(ALUResult),
+      .ALUOp(B.ALUOp),      
+      .Reg1(FAmux_Result),     // FAmux_Result para garantir Forwarding no JALR
+      .Instr_Bit3(B.Curr_Instr[3]), 
+      .PC_Imm(BrImm),
+      .PC_Four(Old_PC_Four),
+      .BrPC(BrPC),
+      .PcSel(PcSel)
   );
 
   // EX_MEM_Reg C;
