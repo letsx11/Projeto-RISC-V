@@ -26,7 +26,7 @@ module Controller (
   assign SW = 7'b0100011;  //sw
   assign BR = 7'b1100011;  //beq, bne, blt, bge
   assign I_TYPE = 7'b0010011; // addi, slti, slli, srli, srai
-  assign J = 7'b11001111; // jal
+  assign J = 7'b1101111; // jal
   assign JR = 7'b1100111; // jalr
 
   assign ALUSrc = (Opcode == LW || Opcode == SW || Opcode == I_TYPE);
