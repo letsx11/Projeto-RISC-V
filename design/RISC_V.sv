@@ -11,6 +11,8 @@ module riscv #(
     output logic [31:0] reg_data,
     output logic reg_write_sig,
 
+    output logic halt_detectado,
+
     output logic wr,
     output logic rd,
     output logic [8:0] addr,
@@ -25,6 +27,7 @@ module riscv #(
   logic [6:0] Funct7;
   logic [2:0] Funct3;
   logic [3:0] Operation;
+  logic Halt;
 
   Controller c (
       opcode,
@@ -34,8 +37,11 @@ module riscv #(
       MemRead,
       MemWrite,
       ALUop,
-      Branch
+      Branch,
+      Halt
   );
+
+  assign halt_detectado = Halt;
 
   ALUController ac (
       ALUop_Reg,
@@ -53,6 +59,7 @@ module riscv #(
       MemWrite,
       MemRead,
       Branch,
+      Halt,
       ALUop,
       Operation,
       opcode,
