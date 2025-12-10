@@ -20,6 +20,7 @@ module Datapath #(
     Branch,  // Branch Enable
     input  logic [          1:0] ALUOp,
     input  logic [ALU_CC_W -1:0] ALU_CC,         // ALU Control Code ( input of the ALU )
+    input  logic                 Halt;
     output logic [          6:0] opcode,
     output logic [          6:0] Funct7,
     output logic [          2:0] Funct3,
@@ -51,11 +52,14 @@ module Datapath #(
   logic [DATA_W-1:0] FAmux_Result;
   logic [DATA_W-1:0] FBmux_Result;
   logic Reg_Stall;  //1: PC fetch same, Register not update
+  logic Parar_Pipeline
 
   if_id_reg A;
   id_ex_reg B;
   ex_mem_reg C;
   mem_wb_reg D;
+
+  assign Parar_Pipeline = Reg_Stall || Halt; //para se for conflito ou halt
 
   // next PC
   adder #(9) pcadd (
@@ -73,7 +77,7 @@ module Datapath #(
       clk,
       reset,
       Next_PC,
-      Reg_Stall,
+      Parar_Pipeline,
       PC
   );
   instructionmemory instr_mem (
@@ -89,7 +93,7 @@ module Datapath #(
       A.Curr_Pc <= 0;
       A.Curr_Instr <= 0;
     end
-        else if (!Reg_Stall)    // stall
+        else if (!Parar_Pipeline)    // stall ou halt
         begin
       A.Curr_Pc <= PC;
       A.Curr_Instr <= Instr;
