@@ -17,9 +17,10 @@ module Controller (
     output logic MemWrite, //Data memory contents designated by the address input are replaced by the value on the Write data input.
     output logic [1:0] ALUOp,  //00: LW/SW; 01:Branch; 10: Rtype
     output logic Branch  //0: branch is not taken; 1: branch is taken
+    output logic Halt;
 );
 
-    logic [6:0] R_TYPE, LW, SW, BR, I_TYPE, J, JR;
+    logic [6:0] R_TYPE, LW, SW, BR, I_TYPE, J, JR, H;
 
   assign R_TYPE = 7'b0110011;  //add, and
   assign LW = 7'b0000011;  //lw
@@ -28,6 +29,7 @@ module Controller (
   assign I_TYPE = 7'b0010011; // addi, slti, slli, srli, srai
   assign J = 7'b1101111; // jal
   assign JR = 7'b1100111; // jalr
+  assign H = 7'b1111111; //halt
 
   assign ALUSrc = (Opcode == LW || Opcode == SW || Opcode == I_TYPE);
   assign MemtoReg = (Opcode == LW);
@@ -37,5 +39,6 @@ module Controller (
   assign ALUOp[0] = (Opcode == BR || Opcode == J || Opcode == JR);
   assign ALUOp[1] = (Opcode == R_TYPE || Opcode == I_TYPE || Opcode == J || Opcode == JR);
   assign Branch = (Opcode == BR || Opcode == J || Opcode == JR);
+  assign Halt = (Opcode == H); // ativa o sinal se for halt
   
 endmodule
